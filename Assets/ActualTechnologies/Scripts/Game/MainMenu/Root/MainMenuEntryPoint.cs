@@ -1,15 +1,15 @@
 using System;
-using ActualTechnologies.Game.Gameplay.Root.View;
 using ActualTechnologies.Game.GameRoot;
+using ActualTechnologies.Game.MainMenu.Root.View;
 using UnityEngine;
 
 namespace ActualTechnologies.Game.Gameplay.Root
 {
-    public class GameplayEntryPoint : MonoBehaviour
+    public class MainMenuEntryPoint : MonoBehaviour
     {
-        public event Action GoToMainMenuSceneRequested;
+        public event Action GoToGameplaySceneRequested;
 
-        [SerializeField] private UIGameplayRootBinder _sceneUIRootPrefab;
+        [SerializeField] private UIMainMenuRootBinder _sceneUIRootPrefab;
 
 
         public void Run(UIRootView UIRoot)
@@ -17,9 +17,9 @@ namespace ActualTechnologies.Game.Gameplay.Root
             var UIScene = Instantiate(_sceneUIRootPrefab);
             UIRoot.AttachSceneUI(UIScene.gameObject);
 
-            UIScene.GoToMainMenuButtonClicked += () =>
+            UIScene.GoToGameplayButtonClicked += () =>
             {
-                GoToMainMenuSceneRequested?.Invoke();
+                GoToGameplaySceneRequested?.Invoke();
             };
         }
     }
