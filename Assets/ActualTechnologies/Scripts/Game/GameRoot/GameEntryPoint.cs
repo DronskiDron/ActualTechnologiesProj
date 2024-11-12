@@ -1,6 +1,8 @@
 using System.Collections;
 using ActualTechnologies.Game.Gameplay.Root;
+using ActualTechnologies.Game.MainMenu.Root;
 using ActualTechnologies.Utils;
+using R3;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -42,7 +44,8 @@ namespace ActualTechnologies.Game.GameRoot
 
             if (sceneName == Scenes.GAMEPLAY)
             {
-                _coroutines.StartCoroutine(LoadAndStartGameplay());
+                var enterParams = new GameplayEnterParams("Second.save", 1);
+                _coroutines.StartCoroutine(LoadAndStartGameplay(enterParams));
                 return;
             }
 
@@ -57,47 +60,49 @@ namespace ActualTechnologies.Game.GameRoot
                 return;
             }
 #endif
-            _coroutines.StartCoroutine(LoadAndStartGameplay());
+            _coroutines.StartCoroutine(LoadAndStartMainMenu());
         }
 
 
-        private IEnumerator LoadAndStartGameplay()
+        private IEnumerator LoadAndStartGameplay(GameplayEnterParams enterParams)
         {
             _UIRoot.ShowLoadingScreen();
 
             yield return LoadScene(Scenes.BOOT);
             yield return LoadScene(Scenes.GAMEPLAY);
 
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
 
             var sceneEntryPoint = Object.FindObjectOfType<GameplayEntryPoint>();
-            sceneEntryPoint.Run(_UIRoot);
-
-            sceneEntryPoint.GoToMainMenuSceneRequested += () =>
+            sceneEntryPoint.Run(_UIRoot, enterParams).Subscribe(gameplayExitParams =>
             {
-                _coroutines.StartCoroutine(LoadAndStartMainMenu());
-            };
+                _coroutines.StartCoroutine(LoadAndStartMainMenu(gameplayExitParams.MainMenuEnterParams));
+            });
 
             _UIRoot.HideLoadingScreen();
         }
 
 
-        private IEnumerator LoadAndStartMainMenu()
+        private IEnumerator LoadAndStartMainMenu(MainMenuEnterParams enterParams = null)
         {
             _UIRoot.ShowLoadingScreen();
 
             yield return LoadScene(Scenes.BOOT);
             yield return LoadScene(Scenes.MAIN_MENU);
 
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
 
             var sceneEntryPoint = Object.FindObjectOfType<MainMenuEntryPoint>();
-            sceneEntryPoint.Run(_UIRoot);
+            sceneEntryPoint.Run(_UIRoot, enterParams).Subscribe(mainMenuExitParams =>
+            {
+                var targetSceneName = mainMenuExitParams.TargetSceneEnterParams.SceneName;
 
-            sceneEntryPoint.GoToGameplaySceneRequested += () =>
-           {
-               _coroutines.StartCoroutine(LoadAndStartGameplay());
-           };
+                if (targetSceneName == Scenes.GAMEPLAY)
+                {
+                    _coroutines.StartCoroutine(LoadAndStartGameplay(mainMenuExitParams.TargetSceneEnterParams.
+                    As<GameplayEnterParams>()));
+                }
+            });
 
             _UIRoot.HideLoadingScreen();
         }
