@@ -1,7 +1,9 @@
 using System.Collections;
 using ActualTechnologies.Game.Gameplay.Root;
+using ActualTechnologies.Game.GameRoot.Services;
 using ActualTechnologies.Game.MainMenu.Root;
 using ActualTechnologies.Utils;
+using BaCon;
 using R3;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,6 +15,8 @@ namespace ActualTechnologies.Game.GameRoot
         private static GameEntryPoint _instance;
         private Coroutines _coroutines;
         private UIRootView _UIRoot;
+        private DIContainer _rootContainer = new();
+        private DIContainer _cachedSceneContainer;
 
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -34,6 +38,9 @@ namespace ActualTechnologies.Game.GameRoot
             var prefabUIRoot = Resources.Load<UIRootView>("UIRoot");
             _UIRoot = Object.Instantiate(prefabUIRoot);
             Object.DontDestroyOnLoad(_UIRoot.gameObject);
+            _rootContainer.RegisterInstance(_UIRoot);
+
+            _rootContainer.RegisterFactory(_ => new SomeProjectService()).AsSingle();
         }
 
 
@@ -67,6 +74,7 @@ namespace ActualTechnologies.Game.GameRoot
         private IEnumerator LoadAndStartGameplay(GameplayEnterParams enterParams)
         {
             _UIRoot.ShowLoadingScreen();
+            _cachedSceneContainer?.Dispose();
 
             yield return LoadScene(Scenes.BOOT);
             yield return LoadScene(Scenes.GAMEPLAY);
@@ -74,7 +82,8 @@ namespace ActualTechnologies.Game.GameRoot
             yield return new WaitForSeconds(1f);
 
             var sceneEntryPoint = Object.FindObjectOfType<GameplayEntryPoint>();
-            sceneEntryPoint.Run(_UIRoot, enterParams).Subscribe(gameplayExitParams =>
+            var gameplayContainer = _cachedSceneContainer = new DIContainer(_rootContainer);
+            sceneEntryPoint.Run(gameplayContainer, enterParams).Subscribe(gameplayExitParams =>
             {
                 _coroutines.StartCoroutine(LoadAndStartMainMenu(gameplayExitParams.MainMenuEnterParams));
             });
@@ -86,6 +95,7 @@ namespace ActualTechnologies.Game.GameRoot
         private IEnumerator LoadAndStartMainMenu(MainMenuEnterParams enterParams = null)
         {
             _UIRoot.ShowLoadingScreen();
+            _cachedSceneContainer?.Dispose();
 
             yield return LoadScene(Scenes.BOOT);
             yield return LoadScene(Scenes.MAIN_MENU);
@@ -93,7 +103,8 @@ namespace ActualTechnologies.Game.GameRoot
             yield return new WaitForSeconds(1f);
 
             var sceneEntryPoint = Object.FindObjectOfType<MainMenuEntryPoint>();
-            sceneEntryPoint.Run(_UIRoot, enterParams).Subscribe(mainMenuExitParams =>
+            var mainMenuContainer = _cachedSceneContainer = new DIContainer(_rootContainer);
+            sceneEntryPoint.Run(mainMenuContainer, enterParams).Subscribe(mainMenuExitParams =>
             {
                 var targetSceneName = mainMenuExitParams.TargetSceneEnterParams.SceneName;
 
