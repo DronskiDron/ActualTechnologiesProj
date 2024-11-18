@@ -2,6 +2,7 @@ using System.Collections;
 using ActualTechnologies.Game.Gameplay.Root;
 using ActualTechnologies.Game.GameRoot.Services;
 using ActualTechnologies.Game.MainMenu.Root;
+using ActualTechnologies.Game.State;
 using ActualTechnologies.Utils;
 using BaCon;
 using R3;
@@ -39,6 +40,10 @@ namespace ActualTechnologies.Game.GameRoot
             _UIRoot = Object.Instantiate(prefabUIRoot);
             Object.DontDestroyOnLoad(_UIRoot.gameObject);
             _rootContainer.RegisterInstance(_UIRoot);
+
+            var gameStateProvider = new PlayerPrefsGameStateProvider();
+            gameStateProvider.LoadSettingsState();
+            _rootContainer.RegisterInstance<IGameStateProvider>(gameStateProvider);
 
             _rootContainer.RegisterFactory(_ => new SomeProjectService()).AsSingle();
         }
@@ -80,6 +85,10 @@ namespace ActualTechnologies.Game.GameRoot
             yield return LoadScene(Scenes.GAMEPLAY);
 
             yield return new WaitForSeconds(1f);
+
+            var isGameStateLoaded = false;
+            _rootContainer.Resolve<IGameStateProvider>().LoadGameState().Subscribe(_ => isGameStateLoaded = true);
+            yield return new WaitUntil(() => isGameStateLoaded);
 
             var sceneEntryPoint = Object.FindObjectOfType<GameplayEntryPoint>();
             var gameplayContainer = _cachedSceneContainer = new DIContainer(_rootContainer);
