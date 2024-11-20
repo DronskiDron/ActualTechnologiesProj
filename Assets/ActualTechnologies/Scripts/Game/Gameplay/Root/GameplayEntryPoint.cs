@@ -1,7 +1,11 @@
+using ActualTechnologies.Game.Gameplay.Commands;
 using ActualTechnologies.Game.Gameplay.Root.View;
 using ActualTechnologies.Game.GameRoot;
 using ActualTechnologies.Game.MainMenu.Root;
+using ActualTechnologies.Game.State;
+using ActualTechnologies.Game.State.cmd;
 using BaCon;
+using ObservableCollections;
 using R3;
 using UnityEngine;
 
@@ -17,6 +21,27 @@ namespace ActualTechnologies.Game.Gameplay.Root
             GameplayRegistrations.Register(gameplayContainer, enterParams);
             var gameplayViewModelsContainer = new DIContainer(gameplayContainer);
             GameplayViewModelsRegistrations.Register(gameplayViewModelsContainer);
+
+            ///Command Processor Test
+            var gameStateProvider = gameplayContainer.Resolve<IGameStateProvider>();
+
+            gameStateProvider.GameState.Buildings.ObserveAdd().Subscribe(e =>
+            {
+                var building = e.Value;
+                Debug.Log("Building placed.Type id: " +
+                building.TypeId
+                + " Id: " + building.Id
+                + ", Position: " +
+                building.Position.Value);
+            });
+
+            var cmd = new CommandProcessor(gameStateProvider);
+
+            cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameStateProvider.GameState));
+
+            cmd.Process(new CmdPlaceBuilding("MyAwesomBuilding", GetRandomPosition()));
+            cmd.Process(new CmdPlaceBuilding("MySecondAwesomBuilding", GetRandomPosition()));
+            cmd.Process(new CmdPlaceBuilding("MyThirdAwesomBuilding", GetRandomPosition()));
 
             //For test
             gameplayViewModelsContainer.Resolve<UIGameplayRootViewModel>();
@@ -36,6 +61,16 @@ namespace ActualTechnologies.Game.Gameplay.Root
             var exitToMainMenuSceneSignal = exitSceneSignalSubj.Select(_ => exitParams);
 
             return exitToMainMenuSceneSignal;
+        }
+
+
+        private Vector3Int GetRandomPosition()
+        {
+            var rX = Random.Range(-10, 10);
+            var rY = Random.Range(-10, 10);
+            var rPosition = new Vector3Int(rX, rY, 0);
+
+            return rPosition;
         }
     }
 }

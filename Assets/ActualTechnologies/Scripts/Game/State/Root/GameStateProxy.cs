@@ -9,6 +9,8 @@ namespace ActualTechnologies.Game.State.Root
     {
         public ObservableList<BuildingEntityProxy> Buildings { get; } = new();
 
+        private readonly GameState _gameState;
+
 
         public GameStateProxy(GameState gameState)
         {
@@ -16,14 +18,8 @@ namespace ActualTechnologies.Game.State.Root
 
             Buildings.ObserveAdd().Subscribe(e =>
             {
-                var eddedBuildingEntity = e.Value;
-                gameState.Buildings.Add(new BuildingEntity
-                {
-                    Id = eddedBuildingEntity.Id,
-                    TypeId = eddedBuildingEntity.TypeId,
-                    Level = eddedBuildingEntity.Level.Value,
-                    Position = eddedBuildingEntity.Position.Value,
-                });
+                var addedBuildingEntity = e.Value;
+                gameState.Buildings.Add(addedBuildingEntity.Origin);
             });
 
             Buildings.ObserveRemove().Subscribe(e =>
@@ -32,6 +28,13 @@ namespace ActualTechnologies.Game.State.Root
                 var removedBuildingEntity = gameState.Buildings.FirstOrDefault(b => b.Id == removedBuildingEntityProxy.Id);
                 gameState.Buildings.Remove(removedBuildingEntity);
             });
+            this._gameState = gameState;
+        }
+
+
+        public int GetEntityId()
+        {
+            return _gameState.GlobalEntityId++;
         }
     }
 }

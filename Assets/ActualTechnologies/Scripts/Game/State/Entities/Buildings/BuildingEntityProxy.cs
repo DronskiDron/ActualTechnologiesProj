@@ -7,6 +7,7 @@ namespace ActualTechnologies.Game.State.Buildings
     {
         public int Id { get; }
         public string TypeId { get; }
+        public BuildingEntity Origin { get; }
 
         public ReactiveProperty<Vector3Int> Position { get; }
         public ReactiveProperty<int> Level { get; }
@@ -14,6 +15,7 @@ namespace ActualTechnologies.Game.State.Buildings
 
         public BuildingEntityProxy(BuildingEntity buildingEntity)
         {
+            Origin = buildingEntity;
             Id = buildingEntity.Id;
             TypeId = buildingEntity.TypeId;
             Position = new ReactiveProperty<Vector3Int>(buildingEntity.Position);

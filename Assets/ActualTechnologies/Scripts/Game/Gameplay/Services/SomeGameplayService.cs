@@ -21,15 +21,15 @@ namespace ActualTechnologies.Game.Gameplay.Services
             _someProjectService = someProjectService;
             Debug.Log(GetType().Name + " has been created");
 
-            gameState.Buildings.ForEach(b => Debug.Log($"Building: {b.TypeId}"));
-            gameState.Buildings.ObserveAdd().Subscribe(e => Debug.Log($"Building added:{e.Value.TypeId}"));
-            gameState.Buildings.ObserveRemove().Subscribe(e => Debug.Log($"Building removed:{e.Value.TypeId}"));
+            // gameState.Buildings.ForEach(b => Debug.Log($"Building: {b.TypeId}"));
+            // gameState.Buildings.ObserveAdd().Subscribe(e => Debug.Log($"Building added:{e.Value.TypeId}"));
+            // gameState.Buildings.ObserveRemove().Subscribe(e => Debug.Log($"Building removed:{e.Value.TypeId}"));
 
-            AddBuilding("First Building");
-            AddBuilding("Second Building");
-            AddBuilding("Third Building");
+            // AddBuilding("First Building");
+            // AddBuilding("Second Building");
+            // AddBuilding("Third Building");
 
-            RemoveBuilding("Second Building");
+            // RemoveBuilding("Second Building");
         }
 
 
