@@ -1,9 +1,8 @@
-using ActualTechnologies.Game.Gameplay.Commands;
 using ActualTechnologies.Game.Gameplay.Root.View;
+using ActualTechnologies.Game.Gameplay.Services;
 using ActualTechnologies.Game.GameRoot;
 using ActualTechnologies.Game.MainMenu.Root;
 using ActualTechnologies.Game.State;
-using ActualTechnologies.Game.State.cmd;
 using BaCon;
 using ObservableCollections;
 using R3;
@@ -35,13 +34,11 @@ namespace ActualTechnologies.Game.Gameplay.Root
                 building.Position.Value);
             });
 
-            var cmd = new CommandProcessor(gameStateProvider);
+            var buildingsService = gameplayContainer.Resolve<BuildingsService>();
 
-            cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameStateProvider.GameState));
-
-            cmd.Process(new CmdPlaceBuilding("MyAwesomBuilding", GetRandomPosition()));
-            cmd.Process(new CmdPlaceBuilding("MySecondAwesomBuilding", GetRandomPosition()));
-            cmd.Process(new CmdPlaceBuilding("MyThirdAwesomBuilding", GetRandomPosition()));
+            buildingsService.PlaceBuilding("MyAwesomBuilding", GetRandomPosition());
+            buildingsService.PlaceBuilding("MySecondAwesomBuilding", GetRandomPosition());
+            buildingsService.PlaceBuilding("MyThirdAwesomBuilding", GetRandomPosition());
 
             //For test
             gameplayViewModelsContainer.Resolve<UIGameplayRootViewModel>();

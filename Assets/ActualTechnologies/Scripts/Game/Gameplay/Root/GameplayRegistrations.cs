@@ -1,6 +1,7 @@
+using ActualTechnologies.Game.Gameplay.Commands;
 using ActualTechnologies.Game.Gameplay.Services;
-using ActualTechnologies.Game.GameRoot.Services;
 using ActualTechnologies.Game.State;
+using ActualTechnologies.Game.State.cmd;
 using BaCon;
 
 namespace ActualTechnologies.Game.Gameplay.Root
@@ -9,9 +10,14 @@ namespace ActualTechnologies.Game.Gameplay.Root
     {
         public static void Register(DIContainer container, GameplayEnterParams gameplayEnterParams)
         {
-            container.RegisterFactory(c => new SomeGameplayService(
-                c.Resolve<IGameStateProvider>().GameState,
-                c.Resolve<SomeProjectService>())).AsSingle();
+            var gameStateProvider = container.Resolve<IGameStateProvider>();
+            var gameState = gameStateProvider.GameState;
+
+            var cmd = new CommandProcessor(gameStateProvider);
+            cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameState));
+            container.RegisterInstance<ICommandProcessor>(cmd);
+
+            container.RegisterFactory(_ => new BuildingsService(gameState.Buildings, cmd)).AsSingle();
         }
     }
 }

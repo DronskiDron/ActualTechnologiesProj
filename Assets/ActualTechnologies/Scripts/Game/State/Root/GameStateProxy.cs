@@ -14,6 +14,7 @@ namespace ActualTechnologies.Game.State.Root
 
         public GameStateProxy(GameState gameState)
         {
+            _gameState = gameState;
             gameState.Buildings.ForEach(buildingOrigin => Buildings.Add(new BuildingEntityProxy(buildingOrigin)));
 
             Buildings.ObserveAdd().Subscribe(e =>
@@ -28,7 +29,6 @@ namespace ActualTechnologies.Game.State.Root
                 var removedBuildingEntity = gameState.Buildings.FirstOrDefault(b => b.Id == removedBuildingEntityProxy.Id);
                 gameState.Buildings.Remove(removedBuildingEntity);
             });
-            this._gameState = gameState;
         }
 
 
