@@ -13,6 +13,7 @@ namespace ActualTechnologies.Game.Gameplay.Root
     public class GameplayEntryPoint : MonoBehaviour
     {
         [SerializeField] private UIGameplayRootBinder _sceneUIRootPrefab;
+        [SerializeField] private WorldGameplayRootBinder _worldRootBinder;
 
 
         public Observable<GameplayExitParams> Run(DIContainer gameplayContainer, GameplayEnterParams enterParams)
@@ -41,8 +42,10 @@ namespace ActualTechnologies.Game.Gameplay.Root
             buildingsService.PlaceBuilding("MyThirdAwesomBuilding", GetRandomPosition());
 
             //For test
+            _worldRootBinder.Bind(gameplayViewModelsContainer.Resolve<WorldGameplayRootViewModel>());
+
+
             gameplayViewModelsContainer.Resolve<UIGameplayRootViewModel>();
-            gameplayViewModelsContainer.Resolve<WorldGameplayRootViewModel>();
 
             var UIRoot = gameplayContainer.Resolve<UIRootView>();
             var UIScene = Instantiate(_sceneUIRootPrefab);
