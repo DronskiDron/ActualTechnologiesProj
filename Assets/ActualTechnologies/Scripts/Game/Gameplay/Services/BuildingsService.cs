@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ActualTechnologies.Game.Gameplay.Commands;
 using ActualTechnologies.Game.Gameplay.View.Buildings;
+using ActualTechnologies.Game.Settings.Gameplay.Buildings;
 using ActualTechnologies.Game.State.Buildings;
 using ActualTechnologies.Game.State.cmd;
 using ObservableCollections;
@@ -15,13 +16,21 @@ namespace ActualTechnologies.Game.Gameplay.Services
         private readonly ICommandProcessor _cmd;
         private readonly ObservableList<BuildingViewModel> _allBuildings = new();
         private readonly Dictionary<int, BuildingViewModel> _buildingsMap = new();
+        private readonly Dictionary<string, BuildingSettings> _buildingsSettingsMap = new();
 
         public IObservableCollection<BuildingViewModel> AllBuildings => _allBuildings;
 
 
-        public BuildingsService(IObservableCollection<BuildingEntityProxy> buildings, ICommandProcessor cmd)
+        public BuildingsService(IObservableCollection<BuildingEntityProxy> buildings,
+        BuildingsSettings buildingsSettings,
+        ICommandProcessor cmd)
         {
             _cmd = cmd;
+
+            foreach (var buildingSettings in buildingsSettings.AllBuildings)
+            {
+                _buildingsSettingsMap[buildingSettings.TypeId] = buildingSettings;
+            }
 
             foreach (var buildingEntity in buildings)
             {
@@ -63,7 +72,8 @@ namespace ActualTechnologies.Game.Gameplay.Services
 
         public void CreateBuildingViewModel(BuildingEntityProxy buildingEntity)
         {
-            var buildingViewModel = new BuildingViewModel(buildingEntity, this);
+            var buildingSettings = _buildingsSettingsMap[buildingEntity.TypeId];
+            var buildingViewModel = new BuildingViewModel(buildingEntity, buildingSettings, this);
             _allBuildings.Add(buildingViewModel);
             _buildingsMap[buildingEntity.Id] = buildingViewModel;
         }

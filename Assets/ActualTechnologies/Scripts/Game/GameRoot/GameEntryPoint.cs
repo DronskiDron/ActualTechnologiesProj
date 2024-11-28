@@ -2,6 +2,7 @@ using System.Collections;
 using ActualTechnologies.Game.Gameplay.Root;
 using ActualTechnologies.Game.GameRoot.Services;
 using ActualTechnologies.Game.MainMenu.Root;
+using ActualTechnologies.Game.Settings;
 using ActualTechnologies.Game.State;
 using ActualTechnologies.Utils;
 using BaCon;
@@ -41,6 +42,10 @@ namespace ActualTechnologies.Game.GameRoot
             Object.DontDestroyOnLoad(_UIRoot.gameObject);
             _rootContainer.RegisterInstance(_UIRoot);
 
+            // App Settings
+            var settingsProvider = new SettingsProvider();
+            _rootContainer.RegisterInstance<ISettingsProvider>(settingsProvider);
+
             var gameStateProvider = new PlayerPrefsGameStateProvider();
             gameStateProvider.LoadSettingsState();
             _rootContainer.RegisterInstance<IGameStateProvider>(gameStateProvider);
@@ -49,8 +54,10 @@ namespace ActualTechnologies.Game.GameRoot
         }
 
 
-        private void RunGame()
+        private async void RunGame()
         {
+            await _rootContainer.Resolve<ISettingsProvider>().LoadGameSettings();
+
 #if UNITY_EDITOR
             var sceneName = SceneManager.GetActiveScene().name;
 

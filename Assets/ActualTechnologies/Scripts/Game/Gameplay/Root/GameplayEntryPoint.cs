@@ -37,9 +37,9 @@ namespace ActualTechnologies.Game.Gameplay.Root
 
             var buildingsService = gameplayContainer.Resolve<BuildingsService>();
 
-            buildingsService.PlaceBuilding("MyAwesomBuilding", GetRandomPosition());
-            buildingsService.PlaceBuilding("MySecondAwesomBuilding", GetRandomPosition());
-            buildingsService.PlaceBuilding("MyThirdAwesomBuilding", GetRandomPosition());
+            buildingsService.PlaceBuilding("dummy", GetRandomPosition());
+            buildingsService.PlaceBuilding("dummy", GetRandomPosition());
+            buildingsService.PlaceBuilding("dummy", GetRandomPosition());
 
             //For test
             _worldRootBinder.Bind(gameplayViewModelsContainer.Resolve<WorldGameplayRootViewModel>());
