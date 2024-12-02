@@ -9,8 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 173ffab526433c04490dff927233214d, type: 3}
-  m_Name: GameSettings
+  m_Script: {fileID: 11500000, guid: 254b25eab1f17eb4fbadf81d95c8719e, type: 3}
+  m_Name: MapSettings 2
   m_EditorClassIdentifier: 
-  BuildingsSettings: {fileID: 11400000, guid: 74f308f4f8fe3a648ad64577d7b87aa7, type: 2}
-  MapsSettings: {fileID: 11400000, guid: 2ba27118dfb987f45a5c6c76696c5a36, type: 2}
+  MapId: 1
+  InitialStateSettings:
+    Buildings:
+    - TypeId: dummy
+      Level: 2
+      Position: {x: 10, y: 0, z: 5}
+    - TypeId: dummy
+      Level: 2
+      Position: {x: 5, y: 6, z: 5}

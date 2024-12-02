@@ -63,7 +63,7 @@ namespace ActualTechnologies.Game.GameRoot
 
             if (sceneName == Scenes.GAMEPLAY)
             {
-                var enterParams = new GameplayEnterParams("Second.save", 1);
+                var enterParams = new GameplayEnterParams(1);
                 _coroutines.StartCoroutine(LoadAndStartGameplay(enterParams));
                 return;
             }

@@ -1,6 +1,8 @@
+using System.Linq;
 using ActualTechnologies.Game.State.Buildings;
 using ActualTechnologies.Game.State.cmd;
 using ActualTechnologies.Game.State.Root;
+using UnityEngine;
 
 namespace ActualTechnologies.Game.Gameplay.Commands
 {
@@ -16,7 +18,15 @@ namespace ActualTechnologies.Game.Gameplay.Commands
 
         public bool Handle(CmdPlaceBuilding command)
         {
-            var entityId = _gameState.GetEntityId();
+            var currentMap = _gameState.Maps.FirstOrDefault(m => m.Id == _gameState.CurrentMapId.CurrentValue);
+
+            if (currentMap == null)
+            {
+                Debug.LogError($"Couldn't find MapState for Id{_gameState.CurrentMapId.CurrentValue}");
+                return false;
+            }
+
+            var entityId = _gameState.CreateEntityId();
             var newBuildingEntity = new BuildingEntity
             {
                 Id = entityId,
@@ -25,7 +35,8 @@ namespace ActualTechnologies.Game.Gameplay.Commands
             };
 
             var newBuildingEntityProxy = new BuildingEntityProxy(newBuildingEntity);
-            _gameState.Buildings.Add(newBuildingEntityProxy);
+
+            currentMap.Buildings.Add(newBuildingEntityProxy);
 
             return true;
         }

@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using ActualTechnologies.Game.Gameplay.Commands;
 using ActualTechnologies.Game.Gameplay.Services;
 using ActualTechnologies.Game.Settings;
@@ -18,9 +20,26 @@ namespace ActualTechnologies.Game.Gameplay.Root
 
             var cmd = new CommandProcessor(gameStateProvider);
             cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameState));
+            cmd.RegisterHandler(new CmdCreateMapStateHandler(gameState, gameSettings));
             container.RegisterInstance<ICommandProcessor>(cmd);
 
-            container.RegisterFactory(_ => new BuildingsService(gameState.Buildings,
+            var loadingMapId = gameplayEnterParams.MapId;
+            var loadingMap = gameState.Maps.FirstOrDefault(m => m.Id == loadingMapId);
+
+            if (loadingMap == null)
+            {
+                var command = new CmdCreateMapState(loadingMapId);
+                var success = cmd.Process(command);
+
+                if (!success)
+                {
+                    throw new Exception($"Couldn't create map state with id: ${loadingMapId}");
+                }
+
+                loadingMap = gameState.Maps.First(m => m.Id == loadingMapId);
+            }
+
+            container.RegisterFactory(_ => new BuildingsService(loadingMap.Buildings,
             gameSettings.BuildingsSettings,
             cmd)).AsSingle();
         }

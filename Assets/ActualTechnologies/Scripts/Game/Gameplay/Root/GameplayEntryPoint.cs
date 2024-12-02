@@ -2,9 +2,7 @@ using ActualTechnologies.Game.Gameplay.Root.View;
 using ActualTechnologies.Game.Gameplay.Services;
 using ActualTechnologies.Game.GameRoot;
 using ActualTechnologies.Game.MainMenu.Root;
-using ActualTechnologies.Game.State;
 using BaCon;
-using ObservableCollections;
 using R3;
 using UnityEngine;
 
@@ -22,25 +20,6 @@ namespace ActualTechnologies.Game.Gameplay.Root
             var gameplayViewModelsContainer = new DIContainer(gameplayContainer);
             GameplayViewModelsRegistrations.Register(gameplayViewModelsContainer);
 
-            ///Command Processor Test
-            var gameStateProvider = gameplayContainer.Resolve<IGameStateProvider>();
-
-            gameStateProvider.GameState.Buildings.ObserveAdd().Subscribe(e =>
-            {
-                var building = e.Value;
-                Debug.Log("Building placed.Type id: " +
-                building.TypeId
-                + " Id: " + building.Id
-                + ", Position: " +
-                building.Position.Value);
-            });
-
-            var buildingsService = gameplayContainer.Resolve<BuildingsService>();
-
-            buildingsService.PlaceBuilding("dummy", GetRandomPosition());
-            buildingsService.PlaceBuilding("dummy", GetRandomPosition());
-            buildingsService.PlaceBuilding("dummy", GetRandomPosition());
-
             //For test
             _worldRootBinder.Bind(gameplayViewModelsContainer.Resolve<WorldGameplayRootViewModel>());
 
@@ -54,7 +33,7 @@ namespace ActualTechnologies.Game.Gameplay.Root
             var exitSceneSignalSubj = new Subject<Unit>();
             UIScene.Bind(exitSceneSignalSubj);
 
-            Debug.Log($"GAMEPLAY ENTRY POINT: save file name = {enterParams.SaveFileName}, level to load = {enterParams.LevelNumber}");
+            Debug.Log($"GAMEPLAY ENTRY POINT: level to load = {enterParams.MapId}");
 
             var mainMenuEnterParams = new MainMenuEnterParams("My random string");
             var exitParams = new GameplayExitParams(mainMenuEnterParams);

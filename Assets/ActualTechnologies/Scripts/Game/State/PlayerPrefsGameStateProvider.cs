@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ActualTechnologies.Game.State.Buildings;
+using ActualTechnologies.Game.State.Maps;
 using ActualTechnologies.Game.State.Root;
 using R3;
 using UnityEngine;
@@ -97,17 +97,7 @@ namespace ActualTechnologies.Game.State
         {
             _gameStateOrigin = new GameState
             {
-                Buildings = new List<BuildingEntity>
-                {
-                    // new()
-                    // {
-                    //     TypeId ="PRO100"
-                    // },
-                    // new()
-                    // {
-                    //     TypeId ="STARIK"
-                    // }
-                }
+                Maps = new List<MapState>()
             };
 
             return new GameStateProxy(_gameStateOrigin);

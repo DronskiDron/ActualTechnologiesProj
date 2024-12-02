@@ -30,10 +30,7 @@ namespace ActualTechnologies.Game.MainMenu.Root
 
             Debug.Log($"MAIN MENU ENTRY POINT: Run main menu scene. Results: {enterParams?.Result}");
 
-            var saveFileName = "MyTest.save";
-            var levelNumber = Random.Range(0, 200);
-
-            var gameplayEnterParams = new GameplayEnterParams(saveFileName, levelNumber);
+            var gameplayEnterParams = new GameplayEnterParams(0);
             var mainMenuExitParams = new MainMenuExitParams(gameplayEnterParams);
             var exitToGameplaySceneSignal = exitSceneSignalSubj.Select(_ => mainMenuExitParams);
 
