@@ -21,6 +21,8 @@ namespace ActualTechnologies.Game.Gameplay.Root
             var cmd = new CommandProcessor(gameStateProvider);
             cmd.RegisterHandler(new CmdPlaceBuildingHandler(gameState));
             cmd.RegisterHandler(new CmdCreateMapStateHandler(gameState, gameSettings));
+            cmd.RegisterHandler(new CmdResourcesAddHandler(gameState));
+            cmd.RegisterHandler(new CmdResourcesSpendHandler(gameState));
             container.RegisterInstance<ICommandProcessor>(cmd);
 
             var loadingMapId = gameplayEnterParams.MapId;
@@ -42,6 +44,8 @@ namespace ActualTechnologies.Game.Gameplay.Root
             container.RegisterFactory(_ => new BuildingsService(loadingMap.Buildings,
             gameSettings.BuildingsSettings,
             cmd)).AsSingle();
+
+            container.RegisterFactory(_ => new ResourcesService(gameState.Resources, cmd)).AsSingle();
         }
     }
 }
